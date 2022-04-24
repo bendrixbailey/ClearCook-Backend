@@ -1,6 +1,12 @@
 #port: 3306
 
+from curses import KEY_SF
+from inspect import EndOfBlock
 import os
+from re import S
+from tkinter import W
+
+from pkg_resources import ensure_directory
 
 settings = {
     'host' : 'clearcookdb.mongo.cosmos.azure.com',

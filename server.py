@@ -11,6 +11,12 @@ api = Api(app)
 api.add_resource(Homepage, '/home')
 api.add_resource(Recipes, '/recipes/<recipe_id>')
 
+
+client = CosmosClient(
+    config.settings['uri'], 
+    config.settings['primary_key']
+)
+
 if __name__ == '__main__':
     
     app.run(debug=True)
