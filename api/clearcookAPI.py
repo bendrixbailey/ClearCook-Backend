@@ -17,7 +17,7 @@ client = CosmosClient(
 #
 class Homepage(Resource):
     def get(self):
-        return {'hello'}
+        return 'hello'
 
 #This is how to get data for each recipe stored in the database
 class Recipes(Resource):
