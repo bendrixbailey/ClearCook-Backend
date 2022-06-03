@@ -1,5 +1,7 @@
 from azure.cosmos import CosmosClient, PartitionKey
 from azure.cosmos.exceptions import *
+import json
+
 
 
 
@@ -22,7 +24,9 @@ def get_random_recipes(client, container_name):
     return ""
 
 def execute_query(container, query):
-    container.query_items(
+    items = list(container.query_items(
         query=query,
         enable_cross_partition_query=True
-    )
+    ))
+
+    return items

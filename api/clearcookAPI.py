@@ -5,7 +5,7 @@ import os
 import json
 import config
 
-from src.db_util_functions import *
+from src.cosmos_db_functions import *
 
 parser = reqparse.RequestParser()
 
@@ -14,12 +14,22 @@ client = CosmosClient(
     config.settings['primary_key']
 )
 
+recipeDB = client.get_database_client(config.settings['recipeDBName'])
+recipeContainer = recipeDB.get_container_client(config.settings['recipeContainerName'])
+
+
 #
 class Homepage(Resource):
     def get(self):
-        return 'hello'
+        response = execute_query(recipeContainer, "SELECT * FROM c")
+        return response
+        # return response
+        # return recipeContainer.id
 
 #This is how to get data for each recipe stored in the database
 class Recipes(Resource):
     def get(self, recipe_id):
-        return {}
+        return ''
+
+    # def get(self):
+    

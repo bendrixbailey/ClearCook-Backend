@@ -3,6 +3,8 @@
 settings = {
     'host' : 'clearcookdb.mongo.cosmos.azure.com',
     'username' : 'clearcookdb',
-    'primary_key' : 'C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==',
+    'primary_key' : 'FMwiJhpLxZtoHNPpwXtnMpKQYKYpBvL1TxhMpE55R3FFfW8TOV4T6nn3SoN8u5tMUwuKWVKtakxctkCMPiTlxg==',
     'uri': 'https://clearcookdb.documents.azure.com:443/',
+    'recipeDBName' : 'clearcookdb',
+    'recipeContainerName' : 'recipes'
 }
