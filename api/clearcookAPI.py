@@ -21,7 +21,7 @@ recipeContainer = recipeDB.get_container_client(config.settings['recipeContainer
 #
 class Homepage(Resource):
     def get(self):
-        response = execute_query(recipeContainer, "SELECT * FROM c")
+        response = get_random_recipes(recipeContainer)
         return response
         # return response
         # return recipeContainer.id
@@ -31,5 +31,7 @@ class Recipes(Resource):
     def get(self, recipe_id):
         return ''
 
-    # def get(self):
+    def get(self):
+        response = execute_query_no_var(recipeContainer, "SELECT * FROM c")
+        return response
     
