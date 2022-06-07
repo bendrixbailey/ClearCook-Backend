@@ -4,8 +4,6 @@ import json
 import random
 
 
-
-
 def create_database(client, db_name):
     try:
         client.create_database(id=db_name)
@@ -36,13 +34,22 @@ def get_recipe_by_id_short(container, id):
     ))
 
 def get_recipe_by_id_long(container, id):
-    return 
+    return list(container.query_items(
+        query='SELECT * FROM c WHERE c.id = "{}"'.format(id),
+        enable_cross_partition_query=True
+    ))
 
 def get_recipe_by_exact_name(container, name):
-    return
+    return list(container.query_items(
+        query='SELECT * FROM c WHERE c.name = "{}"'.format(name),
+        enable_cross_partition_query=True
+    ))
 
 def search_recipe_rough_name(container, rough_name):
-    return
+    return list(container.query_items(
+        query='SELECT * FROM c WHERE c.name LIKE "%{}%"'.format(rough_name),
+        enable_cross_partition_query=True
+    ))
 
 def get_random_recipes(container):
     recipes = []

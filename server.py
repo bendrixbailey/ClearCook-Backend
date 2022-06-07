@@ -8,17 +8,15 @@ from api.clearcookAPI import *
 
 app = Flask(__name__)
 api = Api(app)
-config = configparser.ConfigParser()
-config.read('config.ini')
+
 
 api.add_resource(Homepage, '/home')
-api.add_resource(Recipes, '/recipes/<recipe_id>')
+api.add_resource(AllRecipes, '/recipes')
+api.add_resource(RecipeById, '/recipes/<int:id>')
+api.add_resource(RecipeByName, '/recipes/name/<str:recipe_name>')
 
 
-client = CosmosClient(
-    config['recipedb']['uri'],
-    config['recipedb']['primarykey']
-)
+
 
 if __name__ == '__main__':
     

@@ -25,15 +25,17 @@ class Homepage(Resource):
     def get(self):
         response = get_random_recipes(recipeContainer)
         return response
-        # return response
-        # return recipeContainer.id
 
 #This is how to get data for each recipe stored in the database
-class Recipes(Resource):
-    def get(self, recipe_id):
-        return get_recipe_by_id_long(recipeContainer, recipe_id)
-
+class AllRecipes(Resource):
     def get(self):
         response = execute_query_no_var(recipeContainer, "SELECT * FROM c")
         return response
-    
+
+class RecipeById(Resource):
+    def get(self, recipe_id):
+        return get_recipe_by_id_long(recipeContainer, recipe_id)
+
+class RecipeByName(Resource):
+    def get(self, name):
+        return search_recipe_rough_name(recipeContainer, name)
