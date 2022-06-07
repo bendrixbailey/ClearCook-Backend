@@ -53,7 +53,7 @@ def search_recipe_rough_name(container, rough_name):
 
 def get_random_recipes(container):
     recipes = []
-    recipeCount = execute_query_no_var(container, "SELECT VALUE COUNT(1) FROM c")[0]
+    recipeCount = execute_query_no_var(container, "SELECT VALUE COUNT(1) FROM c")[0] - 1
     print(recipeCount)
     for recipe in range(4):
         tempr = get_recipe_by_id_short(container, random.randint(0, recipeCount))[0]

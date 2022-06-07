@@ -16,8 +16,8 @@ client = CosmosClient(
     config['recipedb']['primarykey']
 )
 
-recipeDB = client.get_database_client(config.settings['recipeDBName'])
-recipeContainer = recipeDB.get_container_client(config.settings['recipeContainerName'])
+recipeDB = client.get_database_client(config['recipedb']['dbname'])
+recipeContainer = recipeDB.get_container_client(config['recipedb']['containername'])
 
 
 #
@@ -33,8 +33,8 @@ class AllRecipes(Resource):
         return response
 
 class RecipeById(Resource):
-    def get(self, recipe_id):
-        return get_recipe_by_id_long(recipeContainer, recipe_id)
+    def get(self, id):
+        return get_recipe_by_id_long(recipeContainer, id)
 
 class RecipeByName(Resource):
     def get(self, name):
