@@ -3,15 +3,17 @@ from flask_restful import Resource, request, reqparse
 from azure.cosmos import CosmosClient, PartitionKey
 import os
 import json
-import config
+import configparser
 
 from src.cosmos_db_functions import *
 
 parser = reqparse.RequestParser()
+config = configparser.ConfigParser()
+config.read('config.ini')
 
 client = CosmosClient(
-    config.settings['uri'], 
-    config.settings['primary_key']
+    config['recipedb']['uri'],
+    config['recipedb']['primarykey']
 )
 
 recipeDB = client.get_database_client(config.settings['recipeDBName'])
@@ -29,7 +31,7 @@ class Homepage(Resource):
 #This is how to get data for each recipe stored in the database
 class Recipes(Resource):
     def get(self, recipe_id):
-        return ''
+        return get_recipe_by_id_long(recipeContainer, recipe_id)
 
     def get(self):
         response = execute_query_no_var(recipeContainer, "SELECT * FROM c")

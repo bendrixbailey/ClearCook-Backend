@@ -29,18 +29,27 @@ def execute_query_no_var(container, query):
 
     return items
 
-def get_recipe_by_id(container, id):
+def get_recipe_by_id_short(container, id):
     return list(container.query_items(
         query='SELECT c.name, c.prepTime, c.imageLink FROM c WHERE c.id = "{}"'.format(id),
         enable_cross_partition_query=True
     ))
+
+def get_recipe_by_id_long(container, id):
+    return 
+
+def get_recipe_by_exact_name(container, name):
+    return
+
+def search_recipe_rough_name(container, rough_name):
+    return
 
 def get_random_recipes(container):
     recipes = []
     recipeCount = execute_query_no_var(container, "SELECT VALUE COUNT(1) FROM c")[0]
     print(recipeCount)
     for recipe in range(4):
-        tempr = get_recipe_by_id(container, random.randint(0, recipeCount))[0]
+        tempr = get_recipe_by_id_short(container, random.randint(0, recipeCount))[0]
         print(tempr)
         recipes.append(tempr)
     return recipes
