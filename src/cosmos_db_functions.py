@@ -47,7 +47,7 @@ def get_recipe_by_exact_name(container, name):
 
 def search_recipe_rough_name(container, rough_name):
     return list(container.query_items(
-        query='SELECT * FROM c WHERE c.name LIKE "%{}%"'.format(rough_name),
+        query='SELECT * FROM c WHERE UPPER(c.name) LIKE UPPER("%{}%")'.format(rough_name),
         enable_cross_partition_query=True
     ))
 
