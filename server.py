@@ -1,12 +1,14 @@
 import os
 from flask import Flask
 from flask_restful import Resource, Api
+from flask_cors import CORS
 import configparser
 
 from api.clearcookAPI import *
 
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 api = Api(app)
 
 api.add_resource(Homepage, '/home')
