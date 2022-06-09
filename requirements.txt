@@ -1,0 +1,5 @@
+azure-cosmos-4.3.0
+configparser-5.2.0
+flask-2.1.2
+flask-restful-0.3.9
+flask-cors-3.0.10
