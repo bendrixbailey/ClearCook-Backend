@@ -1,0 +1,32 @@
+[
+    {
+        "id" : "user0",
+        "name": "Bendrix Bailey",
+        "username" : "bendrixb",
+        "favorites" : ["_r0", "_r1"],
+        "search-history" : [
+            "Salmon"
+        ]
+    },
+    {
+        "id" : "user1",
+        "name": "Richard Signelli",
+        "username" : "rsig2012",
+        "favorites" : ["_r4", "_r0"],
+        "search-history" : ["Peach"]
+    },
+    {
+        "id" : "user2",
+        "name": "Sandra Lawson",
+        "username" : "slawson13",
+        "favorites" : [],
+        "search-history" : []
+    },
+    {
+        "id" : "user3",
+        "name": "Michele Waterstraat",
+        "username" : "mwaterstraat33",
+        "favorites" : ["_r0","_r1","_r2","_r3"],
+        "search-history" : []
+    }
+]
