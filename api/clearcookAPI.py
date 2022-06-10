@@ -1,4 +1,3 @@
-from distutils.command.config import config
 from flask_restful import Resource, request, reqparse
 from azure.cosmos import CosmosClient, PartitionKey
 import os
