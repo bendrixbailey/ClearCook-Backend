@@ -29,13 +29,13 @@ def execute_query_no_var(container, query):
 
 def get_recipe_by_id_short(container, id):
     return list(container.query_items(
-        query='SELECT c.name, c.prepTime, c.imageLink FROM c WHERE c.id = "{}"'.format(id),
+        query='SELECT c.name, c.prepTime, c.imageLink FROM c WHERE c.id = "_r{}"'.format(id),
         enable_cross_partition_query=True
     ))
 
 def get_recipe_by_id_long(container, id):
     return list(container.query_items(
-        query='SELECT * FROM c WHERE c.id = "{}"'.format(id),
+        query='SELECT * FROM c WHERE c.id = "_r{}"'.format(id),
         enable_cross_partition_query=True
     ))
 
