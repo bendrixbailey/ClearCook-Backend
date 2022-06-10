@@ -1,7 +1,9 @@
-Launch Virtual Environment:
-pip install -r requirements.txt
+Python flask backend for the ClearCook website.
 
-Run npm install -g angular-cli
+
+
+
+
 
 running:
 >set FLASK_APP=server
