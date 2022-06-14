@@ -192,7 +192,7 @@
         "id" : "_r4",
         "name" : "Breakfast Omlette",
         "prepTime": 30,
-        "imageLink": "",
+        "imageLink": "https://www.thespruceeats.com/thmb/pzbAvE2z_VvsZ7VG6GdGKP4IQ68=/940x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/vegetarian-omelette-with-bell-peppers-3376569-hero-4-c276751995104c1e917070e911d2d677.jpg",
         "categories" : ["Breakfast", "Eggs"],
         "ingredients" : [
             {
@@ -218,6 +218,40 @@
             {
                 "item": "Salt",
                 "quantity": "To Taste"
+            }
+        ],
+        "steps": ["TODO1", "TODO2", "TODO3"]
+    },
+    {
+        "id" : "_r5",
+        "name" : "Chicken Caesar Salad",
+        "prepTime": 30,
+        "imageLink": "https://www.verywellfit.com/thmb/jO_FJohYG5WDcIku937hi58GL_A=/800x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/caesar-salad-with-grilled-chicken-121664016-5bd22cbc46e0fb00519577c3.jpg",
+        "categories" : ["Lunch", "Salad", "Chicken"],
+        "ingredients" : [
+            {
+                "item": "Croutons",
+                "quantity": "1/2 cup"
+            },
+            {
+                "item": "Lettuce",
+                "quantity": "4 cups"
+            },
+            {
+                "item": "Grated Parmesan Cheese",
+                "quantity": "1/4 cup"
+            },
+            {
+                "item": "Caesar Dressing",
+                "quantity": "To Taste"
+            },
+            {
+                "item": "Pepper",
+                "quantity": "To Taste"
+            },
+            {
+                "item": "Chicken",
+                "quantity": ""
             }
         ],
         "steps": ["TODO1", "TODO2", "TODO3"]

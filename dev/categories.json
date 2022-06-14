@@ -1,0 +1,20 @@
+[
+    {
+        "id" : "categories",
+        "categories" : [
+            "Breakfast",
+            "Lunch",
+            "Dinner",
+            "Chicken",
+            "Salmon",
+            "Seafood",
+            "Baking",
+            "Bread",
+            "Dessert",
+            "Cocktails",
+            "Drinks",
+            "Salad",
+            "Eggs"
+        ]
+    }
+]

@@ -39,6 +39,12 @@ user = {
     "search-history" : []
 }
 
+#categories json fields
+category = {
+    "id" : "",
+    "name" : ""
+}
+
 clearcookDB = client.get_database_client(config['recipedb']['dbname'])
 
 
@@ -132,6 +138,7 @@ def main():
                 delete_user_container()
                 t_r_container = make_recipe_container()
                 fill_container_with_data(t_r_container, "testdata.json")
+                fill_container_with_data(t_r_container, "categories.json")
                 print("{} has been rebuilt.".format(config['recipedb']['containername']))
                 t_u_container = make_user_container()
                 fill_container_with_data(t_u_container, "userdata.json")
@@ -141,6 +148,7 @@ def main():
                 delete_recipe_container()
                 t_r_container = make_recipe_container()
                 fill_container_with_data(t_r_container, "testdata.json")
+                fill_container_with_data(t_r_container, "categories.json")
                 print("{} has been filled.".format(config['recipedb']['containername']))
                 
             case "rebuild -u":
