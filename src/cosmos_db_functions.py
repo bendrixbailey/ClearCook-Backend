@@ -1,5 +1,6 @@
 from azure.cosmos import CosmosClient, PartitionKey
 from azure.cosmos.exceptions import *
+import urllib.parse
 import json
 import random
 
@@ -29,7 +30,7 @@ def execute_query_no_var(container, query):
 
 def get_recipe_by_id_short(container, id):
     return list(container.query_items(
-        query='SELECT c.name, c.prepTime, c.imageLink FROM c WHERE c.id = "_r{}"'.format(id),
+        query='SELECT c.id, c.name, c.prepTime, c.imageLink FROM c WHERE c.id = "_r{}"'.format(id),
         enable_cross_partition_query=True
     ))
 
@@ -40,14 +41,16 @@ def get_recipe_by_id_long(container, id):
     ))
 
 def get_recipe_by_exact_name(container, name):
+    print((urllib.parse.unquote_plus(name)))
     return list(container.query_items(
-        query='SELECT * FROM c WHERE c.name = "{}"'.format(name),
+        query='SELECT * FROM c WHERE c.name = "{}"'.format(urllib.parse.unquote_plus(name)),
         enable_cross_partition_query=True
     ))
 
 def search_recipe_rough_name(container, rough_name):
+    print((urllib.parse.unquote_plus(rough_name)))
     return list(container.query_items(
-        query='SELECT * FROM c WHERE UPPER(c.name) LIKE UPPER("%{}%")'.format(rough_name),
+        query='SELECT * FROM c WHERE UPPER(c.name) LIKE UPPER("%{}%")'.format(urllib.parse.unquote_plus(rough_name)),
         enable_cross_partition_query=True
     ))
 

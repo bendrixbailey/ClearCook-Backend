@@ -14,7 +14,9 @@ api = Api(app)
 api.add_resource(Homepage, '/home')
 api.add_resource(AllRecipes, '/recipes', endpoint = 'recipes')
 api.add_resource(RecipeById, '/recipes/<id>')
-api.add_resource(RecipeByName, '/recipes/name/<name>')
+api.add_resource(RecipesByName, '/recipes/name/<name>')
+api.add_resource(RecipeByFullName, '/recipe/name/<name>')
+
 
 
 

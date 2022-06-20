@@ -35,6 +35,10 @@ class RecipeById(Resource):
     def get(self, id):
         return get_recipe_by_id_long(recipeContainer, id)
 
-class RecipeByName(Resource):
+class RecipesByName(Resource):
     def get(self, name):
         return search_recipe_rough_name(recipeContainer, name)
+
+class RecipeByFullName(Resource):
+    def get(self, name):
+        return search_recipe_rough_name(recipeContainer, name)[0]
