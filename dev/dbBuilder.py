@@ -1,5 +1,3 @@
-from codecs import getreader
-from email.policy import default
 from azure.cosmos import CosmosClient
 import azure.cosmos.exceptions as exceptions
 from azure.cosmos.partition_key import PartitionKey
@@ -27,7 +25,11 @@ recipe = {
             "quantity": ""
         }
     ],
-    "steps": []
+    "steps": [],
+    "rating" : {
+        "stars" : 0,
+        "ratings" : 0
+    }
 }
 
 #user json fields
@@ -138,7 +140,6 @@ def main():
                 delete_user_container()
                 t_r_container = make_recipe_container()
                 fill_container_with_data(t_r_container, "testdata.json")
-                fill_container_with_data(t_r_container, "categories.json")
                 print("{} has been rebuilt.".format(config['recipedb']['containername']))
                 t_u_container = make_user_container()
                 fill_container_with_data(t_u_container, "userdata.json")
@@ -148,7 +149,6 @@ def main():
                 delete_recipe_container()
                 t_r_container = make_recipe_container()
                 fill_container_with_data(t_r_container, "testdata.json")
-                fill_container_with_data(t_r_container, "categories.json")
                 print("{} has been filled.".format(config['recipedb']['containername']))
                 
             case "rebuild -u":

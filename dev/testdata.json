@@ -53,7 +53,11 @@
             "Combine the flour and pepper in a bowl, add the beef and toss to coat well. Heat 3 teaspoons of the oil in a large pot. Add the beef a few pieces at a time; do not overcrowd. Cook, turning the pieces until beef is browned on all sides, about 5 minutes per batch; add more oil as needed between batches.",
             "Remove the beef from the pot and add the vinegar and wine. Cook over medium-high heat, scraping the pan with a wooden spoon to loosen any browned bits. Add the beef, beef broth and bay leaves. Bring to a boil, then reduce to a slow simmer.",
             "Cover and cook, skimming broth from time to time, until the beef is tender, about 1 1/2 hours. Add the onions and carrots and simmer, covered, for 10 minutes. Add the potatoes and simmer until vegetables are tender, about 30 minutes more. Add broth or water if the stew is dry. Season with salt and pepper to taste. Ladle among 4 bowls and serve."
-        ]
+        ],
+        "rating" : {
+            "stars" : 4.6,
+            "ratings" : 2
+        }
     },
     {
         "id": "_r1",
@@ -110,7 +114,11 @@
             "Add chicken stock to rice until rice is fully submerged. Wait for water to cook off. Add more chicken stock and repeat again until rice is cooked. Make sure to stir occasionally so rice doesnt burn.",
             "While rice is cooking, cook your chicken breasts in a pan or on the grill until done. Be sure to season the chicken with a little bit of salt and pepper. Then, slice them into strips, or cube them to your liking. ",
             "Time it so the rice is just about finished cooking as the last of the chicken stock is cooking off. Then add seasoning, cheese, peas (microwave them so they arent frozen) and stir. When stirred thoroughly, add chopped chicken and stir again, seasoning to taste."
-        ]
+        ],
+        "rating" : {
+            "stars" : 3.8,
+            "ratings" : 86
+        }
     },
     {
         "id": "_r2",
@@ -154,7 +162,11 @@
             "Combine the flour and pepper in a bowl, add the beef and toss to coat well. Heat 3 teaspoons of the oil in a large pot. Add the beef a few pieces at a time; do not overcrowd. Cook, turning the pieces until beef is browned on all sides, about 5 minutes per batch; add more oil as needed between batches.",
             "Remove the beef from the pot and add the vinegar and wine. Cook over medium-high heat, scraping the pan with a wooden spoon to loosen any browned bits. Add the beef, beef broth and bay leaves. Bring to a boil, then reduce to a slow simmer.",
             "Cover and cook, skimming broth from time to time, until the beef is tender, about 1 1/2 hours. Add the onions and carrots and simmer, covered, for 10 minutes. Add the potatoes and simmer until vegetables are tender, about 30 minutes more. Add broth or water if the stew is dry. Season with salt and pepper to taste. Ladle among 4 bowls and serve."
-        ]
+        ],
+        "rating" : {
+            "stars" : 5.0,
+            "ratings" : 6
+        }
     },
     {
         "id" : "_r3",
@@ -186,7 +198,11 @@
             "TODO1",
             "TODO2",
             "TODO3"
-        ]
+        ],
+        "rating" : {
+            "stars" : 4.3,
+            "ratings" : 15
+        }
     },
     {
         "id" : "_r4",
@@ -220,7 +236,11 @@
                 "quantity": "To Taste"
             }
         ],
-        "steps": ["TODO1", "TODO2", "TODO3"]
+        "steps": ["TODO1", "TODO2", "TODO3"],
+        "rating" : {
+            "stars" : 4.9,
+            "ratings" : 23
+        }
     },
     {
         "id" : "_r5",
@@ -254,6 +274,10 @@
                 "quantity": ""
             }
         ],
-        "steps": ["TODO1", "TODO2", "TODO3"]
+        "steps": ["TODO1", "TODO2", "TODO3"],
+        "rating" : {
+            "stars" : 4.4,
+            "ratings" : 5
+        }
     }
 ]

@@ -1,0 +1,253 @@
+{   
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This stack deploys the VPC infrastructure, Cloud9 and DocumentDB for demonstrating connectivity from serverless applications.**WARNING** This template creates an AWS resources and you will be billed for the resources used if you create a stack from this template.",
+    "Parameters": {
+        "DBClusterName": {
+            "Default": "ClearCook",
+            "Description": "Cluster name",
+            "Type": "String",
+            "MinLength": "1",
+            "MaxLength": "64",
+            "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*(-[a-zA-Z0-9]+)*",
+            "ConstraintDescription": "Must begin with a letter and contain only alphanumeric characters."
+        },
+        "DBInstanceName": {
+            "Default": "recipes",
+            "Description": "Instance name",
+            "Type": "String",
+            "MinLength": "1",
+            "MaxLength": "64",
+            "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*(-[a-zA-Z0-9]+)*",
+            "ConstraintDescription": "Must begin with a letter and contain only alphanumeric characters."
+        },
+        "MasterUser": {
+            "NoEcho": "false",
+            "Description": "The database admin account username",
+            "Default": "clearcookadmin",
+			"Type": "String",
+            "MinLength": "1",
+            "MaxLength": "16",
+            "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
+            "ConstraintDescription": "Must begin with a letter and contain only alphanumeric characters."
+        },
+        "MasterPassword": {
+            "NoEcho": "true",
+            "Description": "The database admin account password",
+            "Type": "String",
+            "MinLength": "1",
+            "MaxLength": "41",
+            "AllowedPattern": "[a-zA-Z0-9]+",
+            "ConstraintDescription": "must contain only alphanumeric characters."
+        },
+        "DBInstanceClass": {
+            "Description": "Instance class. Please refer to: https://docs.aws.amazon.com/documentdb/latest/developerguide/db-instance-classes.html#db-instance-classes-by-region",
+            "Default": "db.t3.medium",
+			"Type": "String",
+            "AllowedValues": [
+                "db.r4.large",
+                "db.r4.xlarge",
+                "db.r4.2xlarge",
+                "db.r4.4xlarge",
+                "db.r4.8xlarge",
+                "db.r4.16xlarge",
+                "db.r5.large",
+                "db.r5.xlarge",
+                "db.r5.2xlarge",
+                "db.r5.4xlarge",
+                "db.r5.12xlarge",
+                "db.r5.24xlarge",
+                "db.t3.medium",
+                "db.t4g.medium"
+            ],
+            "ConstraintDescription": "Instance type must be of the ones supported for the region. Please refer to: https://docs.aws.amazon.com/documentdb/latest/developerguide/db-instance-classes.html#db-instance-classes-by-region"
+        },
+        "EC2InstanceClass" : {
+            "Description" : "Instance type for the ec2 server",
+            "Default" : "t2.micro",
+            "Type" : "String",
+            "AllowedValues" : [
+                "t2.micro",
+                "t3.micro"
+            ]
+        },
+        "EC2ImageType" : {
+            "Description" : "Image type for EC2 server",
+            "Default" : "ami-041306c411c38a789",
+            "Type" : "String",
+            "AllowedValues" : [
+                "ami-041306c411c38a789",
+                "ami-0cff7528ff583bf9a"
+            ]
+        },
+        "EC2KeyPair" : {
+            "Description" : "The name of the key pair to access this EC2",
+            "Default" : "clearcook",
+            "Type" : "AWS::EC2::KeyPair::KeyName"
+        },
+        "EC2AvailabilityZone" : {
+            "Description" : "Availiability zone for the EC2 instance and subnets",
+            "Default" : "us-east-1",
+            "Type" : "String",
+            "AllowedValues" : [
+                "us-east-1"
+            ]
+        }
+    },
+    "Resources" : {
+        "VPC" : {
+            "Type" : "AWS::EC2::VPC",
+            "Properties" : {
+                "CidrBlock" : "10.0.0.0/24",
+                "EnableDnsSupport" : true,
+                "EnableDnsHostnames" : true,
+                "Tags" : [
+                    {
+                        "Key" : "Name",
+                        "Value" : "clearcook-VPC"
+                    }
+                ]
+            }
+        },
+        "InternetGateway" : {
+            "Type" : "AWS::EC2::InternetGateway",
+            "DependsOn" : {"Ref" : "VPC"}
+        },
+        "GatewayAttachment" : {
+            "Type" : "AWS::EC2:VPCGatewayAttachment",
+            "Properties" : {
+                "VpcId" : {"Ref" : "VPC"},
+                "InternetGatewayId" : {"Ref" : "InternetGateway"}
+            }
+        },
+        "PublicSubnetOne" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : {
+                "VpcId" : {"Ref" : "VPC"},
+                "CidrBlock" : "10.0.0.0/26",
+                "MapPublicIpOnLaunch" : true,
+                "AvailabilityZone" : {
+                    "Fn::Select" : [ 
+                        "0", 
+                        { 
+                          "Fn::GetAZs" : "" 
+                        } 
+                      ]
+                },
+                "Tags" : [
+                    {
+                        "Key" : "Name",
+                        "Value" : "clearcook-pubnet-1"
+                    }
+                ]
+            }
+        },
+        "PublicSubnetTwo" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : {
+                "VpcId" : {"Ref" : "VPC"},
+                "CidrBlock" : "10.0.0.64/26",
+                "MapPublicIpOnLaunch" : true,
+                "AvailabilityZone" : {
+                    "Fn::Select" : [ 
+                        "0", 
+                        { 
+                          "Fn::GetAZs" : "" 
+                        } 
+                      ]
+                },
+                "Tags" : [
+                    {
+                        "Key" : "Name",
+                        "Value" : "clearcook-pubnet-2"
+                    }
+                ]
+            }
+        },
+        "PrivateSubnetOne" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : {
+                "VpcId" : {"Ref" : "VPC"},
+                "CidrBlock" : "10.0.0.128/26",
+                "MapPublicIpOnLaunch" : true,
+                "AvailabilityZone" : {
+                    "Fn::Select" : [ 
+                        "0", 
+                        { 
+                          "Fn::GetAZs" : "" 
+                        } 
+                      ]
+                },
+                "Tags" : [
+                    {
+                        "Key" : "Name",
+                        "Value" : "clearcook-prinet-1"
+                    }
+                ]
+            }
+        },
+        "PrivateSubnetTwo" : {
+            "Type" : "AWS::EC2::Subnet",
+            "Properties" : {
+                "VpcId" : {"Ref" : "VPC"},
+                "CidrBlock" : "10.0.0.192/26",
+                "MapPublicIpOnLaunch" : true,
+                "AvailabilityZone" : {
+                    "Fn::Select" : [ 
+                        "0", 
+                        { 
+                          "Fn::GetAZs" : "" 
+                        } 
+                      ]
+                },
+                "Tags" : [
+                    {
+                        "Key" : "Name",
+                        "Value" : "clearcook-prinet-2"
+                    }
+                ]
+            }
+        },
+        "PublicRouteTable": {
+          "Type": "AWS::EC2::RouteTable",
+          "Properties": {
+            "VpcId": {"Ref" : "VPC"},
+            "Tags": [{"Key" : "Name", "Value" : "clearcook-route-tab-public"}]
+          }
+        },
+        "PublicRouteOne": {
+          "Type": "AWS::EC2::Route",
+          "DependsOn" : {"Ref" : "GatewayAttachment"},
+          "Properties": {
+            "RouteTableId": {"Ref" : "PublicRouteTable"},
+            "DestinationCidrBlock": "0.0.0.0/0",
+            "GatewayId": {"Ref" : "InternetGateway"}
+          }
+        },
+        "PrivateRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+              "VpcId": {"Ref" : "VPC"},
+              "Tags": [{"Key" : "Name", "Value" : "clearcook-route-tab-public"}]
+            }
+        },
+        "PrivateRouteOne": {
+            "Type": "AWS::EC2::Route",
+            "Properties": {
+              "RouteTableId": {"Ref" : "PrivateRouteTable"},
+              "DestinationCidrBlock": "0.0.0.0/0",
+              "NatGatewayId": {"Ref" : "NATGateway"}
+            }
+        },
+        "NatGateway" : {
+            "Type" : "AWS::EC2::NatGateway",
+            "Properties" : {
+                
+            }
+        }
+        
+        
+    },
+    "Outputs" : {
+
+    }
+}
