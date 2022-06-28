@@ -1,0 +1,400 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Serverless REST API for a DocumentDb Cluster
+Metadata: {}
+Parameters:
+  ProjectName:
+    Description: 'Name of project, will be used to name all components'
+    Type: String
+    Default: clearcook
+  DBClusterName:
+    Description: Name of document db cluster
+    Type: String
+    Default: clearcookDB
+  DBInstanceName:
+    Description: Name of document db instance
+    Type: String
+    Default: recipes
+  DocDBUsername:
+    Description: Username to be used for the database
+    Type: String
+    Default: clearcookadmin
+  DocDBPassword:
+    Description: Password to log into the database
+    Type: String
+    Default: Mcman150
+    NoEcho: true
+    MinLength: 6
+  DBInstanceClass:
+    Description : "Instance class"
+    Type: "String"
+    Default: db.t3.medium
+    AllowedValues:
+      - db.t3.medium
+      - db.r5.large
+      - db.r5.xlarge
+      - db.r5.2xlarge
+      - db.r5.4xlarge
+      - db.r5.12xlarge
+      - db.r5.24xlarge                             
+
+Resources:
+
+  #Creation of VPC and subnets
+  VPC:
+    Type: 'AWS::EC2::VPC'
+    Properties:
+      CidrBlock: 10.1.0.0/16
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      Tags:
+        - Key: Name
+          Value: !Sub 
+            - '${name}-vpc'
+            - name: !Ref 'AWS::StackName'
+  InternetGateway:
+    Type: 'AWS::EC2::InternetGateway'
+    DependsOn: VPC
+    Properties: {}
+  GatewayAttachment:
+    Type: 'AWS::EC2::VPCGatewayAttachment'
+    Properties:
+      VpcId: !Ref VPC
+      InternetGatewayId: !Ref InternetGateway
+
+  PublicSubnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      AvailabilityZone: !Select 
+        - '0'
+        - !GetAZs ''
+      VpcId: !Ref VPC
+      CidrBlock: 10.1.0.0/24
+      Tags:
+        - Key: Name
+          Value: !Sub 
+            - '${name}-public-1'
+            - name: !Ref 'AWS::StackName'
+
+  PublicRouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub 
+            - '${name}-public-route-table'
+            - name: !Ref 'AWS::StackName'
+  PublicRoute:
+    Type: 'AWS::EC2::Route'
+    DependsOn: GatewayAttachment
+    Properties:
+      RouteTableId: !Ref PublicRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+
+  PrivateRouteTable:
+    Type: 'AWS::EC2::RouteTable'
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub 
+            - '${name}-private-route-table'
+            - name: !Ref 'AWS::StackName'
+
+  PrivateRoute:
+    Type: 'AWS::EC2::Route'
+    DependsOn: GatewayAttachment
+    Properties:
+      RouteTableId: !Ref PrivateRouteTable
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId: !Ref NATGateway
+
+  PrivateSubnet:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      AvailabilityZone: !Select 
+        - '0'
+        - !GetAZs ''
+      VpcId: !Ref VPC
+      CidrBlock: 10.1.50.0/24
+      Tags:
+        - Key: Name
+          Value: !Sub 
+            - '${name}-private-1'
+            - name: !Ref 'AWS::StackName'
+
+  NATGateway:
+    Type: 'AWS::EC2::NatGateway'
+    Properties:
+      AllocationId: !GetAtt ElasticIP.AllocationId
+      SubnetId: !Ref PublicSubnet
+      Tags:
+        - Key: Name
+          Value: !Sub 
+            - '${name}-natway'
+            - name: !Ref 'AWS::StackName'
+  ElasticIP:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: VPC
+
+  PubNetAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Ref PublicSubnet
+      RouteTableId: !Ref PublicRouteTable
+  PrivNetAssociation:
+    Type: 'AWS::EC2::SubnetRouteTableAssociation'
+    Properties:
+      SubnetId: !Ref PrivateSubnet
+      RouteTableId: !Ref PrivateRouteTable
+
+  DBSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub 
+        - '${name}-sub-group'
+        - name: !Ref 'AWS::StackName'
+      GroupDescription: "Security group for documentdb"
+      VpcId: !Ref VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub 
+            - '${name}-sub-group'
+            - name: !Ref 'AWS::StackName'
+
+
+  #Creation of DB Cluster
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: "Group of subnets (one as of now) for the database."
+      SubnetIds:
+        - !Ref PrivateSubnet
+
+  DBCluster:
+    Type: "AWS::DocDB::DBCluster"
+    DeletionPolicy: Delete
+    Properties:
+      DBClusterIdentifier: !Ref DBClusterName
+      MasterUsername: !Ref DocDBUsername
+      MasterUserPassword: !Ref DocDBPassword
+      EngineVersion: 4.0.0
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      VpcSecurityGroupIds:
+        - !Ref DBSecurityGroup
+
+  DBInstance:
+    Type: "AWS::DocDB::DBInstance"
+    Properties:
+      DBClusterIdentifier: !Ref DBCluster
+      DBInstanceIdentifier: !Ref DBInstanceName
+      DBInstanceClass: !Ref DBInstanceClass
+    DependsOn: DBCluster
+
+  #Creation of Lambdas
+  DBSecretManager:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: !Sub 
+        - '${name}-secret-manager'
+        - name: !Ref 'AWS::StackName'
+      Description: Secrets manager for the cluster
+      SecretString:
+        !Join
+          - '' 
+          - - '{"username":"'
+            - !Ref DocDBUsername
+            - '","password":"'
+            - !Ref DocDBPassword
+            - '", "ssl": true}'
+
+  SecretDocDBClusterAttachment:
+    Type: AWS::SecretsManager::SecretTargetAttachment
+    Properties:
+      SecretId: !Ref DBSecretManager
+      TargetId: !Ref DBCluster
+      TargetType: AWS::DocDB::DBCluster
+  #Role for lambdas to access secret
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        - arn:aws:iam::aws:policy/AWSLambdaExecute
+      Policies:
+        - PolicyName: DocumentDBSecret
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Ref DBSecretManager
+      RoleName: !Sub ${ProjectName}-lambda-role
+
+  #API Gateway
+  APIDocDBREST:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Sub ${ProjectName}-api
+      DefinitionBody: 
+        openapi: "3.0.1"
+        info:
+          title: "clearcookdb"
+        paths:
+          /clearcook/{general_db}/{general_collection}:
+            x-amazon-apigateway-any-method:
+              parameters:
+              - name: "general_db"
+                in: "path"
+                required: true
+                schema:
+                  type: "string"
+              - name: "general_collection"
+                in: "path"
+                required: true
+                schema:
+                  type: "string"
+              responses:
+                "200":
+                  description: "200 response"
+                  content:
+                    application/json:
+                      schema:
+                        $ref: "#/components/schemas/Empty"
+              security:
+              - BasicAuthLambda: []
+              x-amazon-apigateway-integration:
+                uri: 
+                  !Join
+                    - ''
+                    - - 'arn:aws:apigateway:'
+                      - !Ref AWS::Region
+                      - ':lambda:path/2015-03-31/functions/'
+                      - !GetAtt LambdaCRUDFunction.Arn
+                      - '/invocations'
+                responses:
+                  default:
+                    statusCode: "200"
+                passthroughBehavior: "when_no_match"
+                httpMethod: "POST"
+                contentHandling: "CONVERT_TO_TEXT"
+                type: "aws_proxy"
+          /clearcook/recipes/{general_collection}:
+            x-amazon-apigateway-any-method:
+              parameters:
+              - name: "general_collection"
+                in: "path"
+                required: true
+                schema:
+                  type: "string"
+              responses:
+                "200":
+                  description: "200 response"
+                  content:
+                    application/json:
+                      schema:
+                        $ref: "#/components/schemas/Empty"
+              security:
+              - BasicAuthLambda: []
+              x-amazon-apigateway-integration:
+                uri: 
+                  !Join
+                    - ''
+                    - - 'arn:aws:apigateway:'
+                      - !Ref AWS::Region
+                      - ':lambda:path/2015-03-31/functions/'
+                      - !GetAtt LambdaCRUDFunction.Arn
+                      - '/invocations'
+                responses:
+                  default:
+                    statusCode: "200"
+                passthroughBehavior: "when_no_match"
+                httpMethod: "POST"
+                contentHandling: "CONVERT_TO_TEXT"
+                type: "aws_proxy"
+          /clearcook/recipes/collection:
+            x-amazon-apigateway-any-method:
+              responses:
+                "200":
+                  description: "200 response"
+                  content:
+                    application/json:
+                      schema:
+                        $ref: "#/components/schemas/Empty"
+              security:
+              - BasicAuthLambda: []
+              x-amazon-apigateway-integration:
+                uri: 
+                  !Join
+                    - ''
+                    - - 'arn:aws:apigateway:'
+                      - !Ref AWS::Region
+                      - ':lambda:path/2015-03-31/functions/'
+                      - !GetAtt LambdaCRUDFunction.Arn
+                      - '/invocations'
+                responses:
+                  default:
+                    statusCode: "200"
+                passthroughBehavior: "when_no_match"
+                httpMethod: "POST"
+                contentHandling: "CONVERT_TO_TEXT"
+                type: "aws_proxy"
+        components:
+          schemas:
+            Empty:
+              title: "Empty Schema"
+              type: "object"
+          securitySchemes:
+            BasicAuthLambda:
+              type: "apiKey"
+              name: "Authorization"
+              in: "header"
+              x-amazon-apigateway-authtype: "custom"
+              x-amazon-apigateway-authorizer:
+                authorizerUri: 
+                  !Join
+                    - ''
+                    - - 'arn:aws:apigateway:'
+                      - !Ref AWS::Region
+                      - ':lambda:path/2015-03-31/functions/'
+                      - !GetAtt LambdaBasicAuthFunction.Arn
+                      - '/invocations'
+                authorizerResultTtlInSeconds: 300
+                identitySource: "method.request.header.Authorization"
+                type: "request"
+        x-amazon-apigateway-gateway-responses:
+          UNAUTHORIZED:
+            statusCode: 401
+            responseParameters:
+              gatewayresponse.header.WWW-Authenticate: "'Basic'"
+            responseTemplates:
+              application/json: "{\"message\":$context.error.messageString}"
+
+Outputs:
+  StackName:
+    Value: !Sub ${AWS::StackName}
+  DocDBSecret:
+    Value: !Ref DBSecretManager

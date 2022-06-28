@@ -163,50 +163,6 @@
                 ]
             }
         },
-        "PrivateSubnetOne" : {
-            "Type" : "AWS::EC2::Subnet",
-            "Properties" : {
-                "VpcId" : {"Ref" : "VPC"},
-                "CidrBlock" : "10.0.0.128/26",
-                "MapPublicIpOnLaunch" : true,
-                "AvailabilityZone" : {
-                    "Fn::Select" : [ 
-                        "0", 
-                        { 
-                          "Fn::GetAZs" : "" 
-                        } 
-                      ]
-                },
-                "Tags" : [
-                    {
-                        "Key" : "Name",
-                        "Value" : "clearcook-prinet-1"
-                    }
-                ]
-            }
-        },
-        "PrivateSubnetTwo" : {
-            "Type" : "AWS::EC2::Subnet",
-            "Properties" : {
-                "VpcId" : {"Ref" : "VPC"},
-                "CidrBlock" : "10.0.0.192/26",
-                "MapPublicIpOnLaunch" : true,
-                "AvailabilityZone" : {
-                    "Fn::Select" : [ 
-                        "0", 
-                        { 
-                          "Fn::GetAZs" : "" 
-                        } 
-                      ]
-                },
-                "Tags" : [
-                    {
-                        "Key" : "Name",
-                        "Value" : "clearcook-prinet-2"
-                    }
-                ]
-            }
-        },
         "PublicRouteTable": {
           "Type": "AWS::EC2::RouteTable",
           "Properties": {
@@ -238,13 +194,69 @@
               "NatGatewayId": {"Ref" : "NATGateway"}
             }
         },
-        "NatGateway" : {
+        
+        "PubNetOneAssociation": {
+          "Type": "AWS::EC2::SubnetRouteTableAssociation",
+          "Properties": {
+            "SubnetId": {"Ref" : "PublicSubnetOne"},
+            "RouteTableId": {"Ref" : "PublicRouteTable"}
+          }
+        },
+        "NATGateway" : {
             "Type" : "AWS::EC2::NatGateway",
             "Properties" : {
-                
+                "AllocationId" : {"Fn::GetAtt" : "ElasticIP.AllocationId"},
+                "SubnetId" : {"Ref" : "PublicSubnetOne"},
+                 "Tags" : {"Key" : "Name", "Value" : "clearcook-nat-gateway"}
             }
-        }
+        },
+        "ElasticIpAddress" : {
+            "Type" : "AWS::EC2::EIP",
+            "Properties" : {
+                "Domain" : "VPC"
+            }
+        },
+        "EC2Instance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "KeyName": {"Ref" : "EC2KeyPair"},
+                "ImageId": {"Ref" : "EC2ImageType"},
+                "InstanceType": {"Ref" : "EC2InstanceClass"},
+                "NetworkInterfaces" : [
+                    {
+                        "DeviceIndex" : "0",
+                        "AssociatePublicIpAddress" : true,
+                        "SubnetId" : {"Ref" : "PublicSubnetOne"},
+                        "GroupSet" : [ 
+                            { "Ref": "EC2SecurityGroup" }
+                        ]
+                    }
+                ],
+                "Monitoring": false,
+                "Tags": [
+                    {
+                        "Key": "-",
+                        "Value": "-"
+                    }
+                ]
+            }
+        },
         
+        "EC2SecurityGroup" : {
+          "Type" : "AWS::EC2::SecurityGroup",
+          "Properties" : {
+            "GroupDescription" : "Enable ssh access.",
+            "SecurityGroupIngress" : [ 
+              {
+                "IpProtocol" : "tcp",
+                "FromPort" : "22",
+                "ToPort" : "22",
+                "CidrIp" : "0.0.0.0/0"
+              }
+            ],
+            "VpcId" : {"Ref" :  "VPC"}
+          }
+        }
         
     },
     "Outputs" : {
