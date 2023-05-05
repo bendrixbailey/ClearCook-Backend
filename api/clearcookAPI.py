@@ -1,22 +1,22 @@
 from flask_restful import Resource, request, reqparse
-from azure.cosmos import CosmosClient, PartitionKey
 import os
 import json
 import configparser
+from pymongo import MongoClient
 
-from src.cosmos_db_functions import *
+from src.mongodbFunctions import *
 
 parser = reqparse.RequestParser()
 config = configparser.ConfigParser()
 config.read('config.ini')
+env = "local"
 
-client = CosmosClient(
-    config['recipedb']['uri'],
-    config['recipedb']['primarykey']
-)
+client = MongoClient([config[env]["host"]])
 
-recipeDB = client.get_database_client(config['recipedb']['dbname'])
-recipeContainer = recipeDB.get_container_client(config['recipedb']['containername'])
+
+
+recipeDB = client[config[env]["dbname"]]
+recipeContainer = recipeDB[config[env]["recipes"]]
 
 
 #
@@ -28,7 +28,7 @@ class Homepage(Resource):
 #This is how to get data for each recipe stored in the database
 class AllRecipes(Resource):
     def get(self):
-        response = execute_query_no_var(recipeContainer, "SELECT * FROM c")
+        response = get_all_recipes(recipeContainer)
         return response
 
 class RecipeById(Resource):
