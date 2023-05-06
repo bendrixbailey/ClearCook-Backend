@@ -19,7 +19,6 @@ def execute_query_no_variable():
     return
 
 def get_all_recipes(collection):
-
     try:
         results = list(collection.find())
         return json.loads(MongoJSONEncoder().encode(results))
@@ -67,7 +66,7 @@ def get_random_recipes(collection, count=4):
     indexes = random.sample(range(0, recipecont-1), count)
     for index in indexes:
         #print(get_recipe_by_id_long(collection, index))
-        recipes.append(get_recipe_by_id_short(collection, index))
+        recipes.append(get_recipe_by_id_short(collection, index)[0])
         
     return recipes
 
